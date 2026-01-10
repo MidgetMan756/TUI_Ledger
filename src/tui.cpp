@@ -59,7 +59,7 @@ screen::Key screen::getKeyPress() {
 }
 
 // Draw a box at (x, y) with specified width, height, color, and optional text
-void screen::drawBox(int width, int height, int x, int y, int color, std::string text) {
+void screen::drawBox(int width, int height, int x, int y, int color, std::string text, Align align) {
 
     // Set color
     std::cout << "\x1B[" << color << "m";
@@ -84,7 +84,7 @@ void screen::drawBox(int width, int height, int x, int y, int color, std::string
     std::cout.flush();
 }
 
-void screen::drawBoxNew(int width, int height, int x, int y, int color, std::string text) {
+void screen::drawBorder(int width, int height, int x, int y, int color, std::string text, Align align) {
     // Set color
     std::cout << "\x1B[" << color << "m";
 
@@ -110,7 +110,16 @@ void screen::drawBoxNew(int width, int height, int x, int y, int color, std::str
         }
     }
 
-    std::cout << "\x1B[" << y << ";" << (x + 1) << "H";
+    if (align == Align::Center) {
+        int text_start = x + (width - static_cast<int>(text.size())) / 2;
+        std::cout << "\x1B[" << y << ";" << text_start << "H";
+    } else if (align == Align::Right) {
+        int text_start = x + width - static_cast<int>(text.size()) - 1;
+        std::cout << "\x1B[" << y << ";" << text_start << "H";
+    } else {
+        std::cout << "\x1B[" << y << ";" << (x + 1) << "H";
+    }
+    
     std::cout << text;
 
     std::cout << "\x1B[1;1H"; // Move cursor to top-left

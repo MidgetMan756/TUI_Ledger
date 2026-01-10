@@ -23,11 +23,17 @@ public:
         Enter,
         Quit
     };
+
+    enum class Align {
+        Left,
+        Center,
+        Right
+    };
     
     Key getKeyPress();
 
-    void drawBox(int width, int height, int x = 1, int y = 1, int color = 0, std::string text = "");
-    void drawBoxNew(int width, int height, int x = 1, int y = 1, int color = 0, std::string text = "");
+    void drawBox(int width, int height, int x = 1, int y = 1, int color = 0, std::string text = "", Align align = Align::Left);
+    void drawBorder(int width, int height, int x = 1, int y = 1, int color = 0, std::string text = "", Align align = Align::Left);
 
     void writeText(std::string text, int color = 0, int x = 1, int y = 1);
 

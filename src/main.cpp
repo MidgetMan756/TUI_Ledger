@@ -17,11 +17,11 @@ int main() {
 
     // 116x40 Windowed
     // 236x64 Fullscreen
-    scr.drawBoxNew(116, 40, 1, 1, 34, "Big Box");
+    scr.drawBorder(116, 40, 1, 1, 34, "TUI Ledger", screen::Align::Left);
     
-    scr.drawBoxNew(55, 18, 4, 16, 32, "Small Box");
+    scr.drawBorder(55, 18, 4, 16, 32, "Main Menu", screen::Align::Center);
 
-    scr.writeText("Hello, TUI!", 0, 15, 15);
+    scr.writeText("                              Press \"↑/↓\" to scroll up or down and press \"Q\" to quit                              ", 44, 2, 40);
 
     while (true) {
         int selection = scr.scrollCache(lines, 10, 5, 20, 20, 33, 44);
