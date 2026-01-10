@@ -84,6 +84,39 @@ void screen::drawBox(int width, int height, int x, int y, int color, std::string
     std::cout.flush();
 }
 
+void screen::drawBoxNew(int width, int height, int x, int y, int color, std::string text) {
+    // Set color
+    std::cout << "\x1B[" << color << "m";
+
+    // Draw box using Unicode box-drawing characters
+    for (int i = 0; i < height; ++i) {
+        std::cout << "\x1B[" << (y + i) << ";" << x << "H";
+
+        for (int j = 0; j < width; ++j) {
+            if (i == 0 && j == 0)
+                std::cout << "╔";
+            else if (i == 0 && j == width - 1)
+                std::cout << "╗";
+            else if (i == height - 1 && j == 0)
+                std::cout << "╚";
+            else if (i == height - 1 && j == width - 1)
+                std::cout << "╝";
+            else if (i == 0 || i == height - 1)
+                std::cout << "═";
+            else if (j == 0 || j == width - 1)
+                std::cout << "║";
+            else
+                std::cout << " ";
+        }
+    }
+
+    std::cout << "\x1B[" << y << ";" << (x + 1) << "H";
+    std::cout << text;
+
+    std::cout << "\x1B[1;1H"; // Move cursor to top-left
+    std::cout << "\x1B[0m"; // Reset color
+    std::cout.flush();
+}
 // Write text at (x, y) with specified color
 void screen::writeText(std::string text, int color, int x, int y) {
     // Set color
@@ -189,4 +222,11 @@ int screen::scrollCache(const std::vector<std::string>& cache,
             }
         }
     }
+}
+
+void screen::clearScreen() {
+    // CSI[2J clears the screen, CSI[H moves the cursor to the top-left corner
+    std::cout << "\x1B[2J\x1B[H"; 
+    // Flush the output buffer to ensure the command is sent immediately
+    std::cout.flush();
 }
