@@ -45,27 +45,34 @@ int main() {
     // Instructions
     scr.writeText("                              Press \"↑/↓\" to scroll up or down and press \"Q\" to quit                              ", 44, 2, 40);
 
+    // Main loop
     while (true) {
+        // Main Menu
         selection = scr.scrollCache(lines, 13, 5, mainMenuX + 1, mainMenuY + 2, 34, 44);
 
+        // Exit application
         if (selection == -1) {
             scr.clearScreen();
             return 0;
         }
 
+        // Check selection of main menu item
         switch(selection) {
             case 0:
                 // Accounts
                 scr.drawBorder(50, 20, 40, 10, 34, "Accounts", screen::Align::Center);
 
+                // Accounts submenu
                 while (true) {
                     int accts = scr.scrollCache(accountLines, 48, 15, 41, 12, 34, 44);
 
+                    // Exit application on 'q' press
                     if (accts == -1) {
                         scr.clearScreen();
                         return 0;
                     }
 
+                    // Go back to main menu
                     if (accts == -2) {
                         // Clear Accounts border area
                         for (int i = 0; i < 20; ++i) {
