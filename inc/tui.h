@@ -5,6 +5,8 @@
 #include <vector>
 #include <termios.h>
 
+using namespace std;
+
 class screen{
 public:
 
@@ -21,7 +23,8 @@ public:
         Unknown,
         Up, Down, Left, Right,
         Enter,
-        Quit
+        Quit,
+        Back
     };
 
     enum class Align {
@@ -32,12 +35,12 @@ public:
     
     Key getKeyPress();
 
-    void drawBox(int width, int height, int x = 1, int y = 1, int color = 0, std::string text = "", Align align = Align::Left);
-    void drawBorder(int width, int height, int x = 1, int y = 1, int color = 0, std::string text = "", Align align = Align::Left);
+    void drawBox(int width, int height, int x = 1, int y = 1, int color = 0, string text = "", Align align = Align::Left);
+    void drawBorder(int width, int height, int x = 1, int y = 1, int color = 0, string text = "", Align align = Align::Left);
 
-    void writeText(std::string text, int color = 0, int x = 1, int y = 1);
+    void writeText(string text, int color = 0, int x = 1, int y = 1);
 
-    int scrollCache(const std::vector<std::string>& cache, int width, int height, int x = 1, int y = 1, int FG_color = 0, int HL_color = 44);
+    int scrollCache(const vector<string>& cache, int width, int height, int x = 1, int y = 1, int FG_color = 0, int HL_color = 44);
 
     void clearScreen();
 };

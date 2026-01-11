@@ -7,6 +7,8 @@
 
 #include "tui.h"
 
+using namespace std;
+
 // diable raw mode on destruction
 screen::TermRawMode::~TermRawMode() {
     disableRawMode();
@@ -38,6 +40,8 @@ screen::Key screen::getKeyPress() {
 
     if (c == 'q') return Key::Quit;
 
+    if (c == 'b') return Key::Back;
+
     if (c == '\r' || c == '\n') return Key::Enter;
 
     if (c == '\x1B') {
@@ -59,96 +63,96 @@ screen::Key screen::getKeyPress() {
 }
 
 // Draw a box at (x, y) with specified width, height, color, and optional text
-void screen::drawBox(int width, int height, int x, int y, int color, std::string text, Align align) {
+void screen::drawBox(int width, int height, int x, int y, int color, string text, Align align) {
 
     // Set color
-    std::cout << "\x1B[" << color << "m";
+    cout << "\x1B[" << color << "m";
 
     // Draw box
     for (int i = 0; i < height; ++i) {
-        std::cout << "\x1B[" << (y + i) << ";" << x << "H";
+        cout << "\x1B[" << (y + i) << ";" << x << "H";
 
         for (int j = 0; j < width; ++j) {
             if (i == 0 || i == height - 1 || j == 0 || j == width - 1)
-                std::cout << "*";
+                cout << "*";
             else
-                std::cout << " ";
+                cout << " ";
         }
     }
 
-    std::cout << "\x1B[" << y << ";" << (x + 1) << "H";
-    std::cout << text;
+    cout << "\x1B[" << y << ";" << (x + 1) << "H";
+    cout << text;
 
-    std::cout << "\x1B[1;1H"; // Move cursor to top-left
-    std::cout << "\x1B[0m"; // Reset color
-    std::cout.flush();
+    cout << "\x1B[1;1H"; // Move cursor to top-left
+    cout << "\x1B[0m"; // Reset color
+    cout.flush();
 }
 
-void screen::drawBorder(int width, int height, int x, int y, int color, std::string text, Align align) {
+void screen::drawBorder(int width, int height, int x, int y, int color, string text, Align align) {
     // Set color
-    std::cout << "\x1B[" << color << "m";
+    cout << "\x1B[" << color << "m";
 
     // Draw box using Unicode box-drawing characters
     for (int i = 0; i < height; ++i) {
-        std::cout << "\x1B[" << (y + i) << ";" << x << "H";
+        cout << "\x1B[" << (y + i) << ";" << x << "H";
 
         for (int j = 0; j < width; ++j) {
             if (i == 0 && j == 0)
-                std::cout << "╔";
+                cout << "╔";
             else if (i == 0 && j == width - 1)
-                std::cout << "╗";
+                cout << "╗";
             else if (i == height - 1 && j == 0)
-                std::cout << "╚";
+                cout << "╚";
             else if (i == height - 1 && j == width - 1)
-                std::cout << "╝";
+                cout << "╝";
             else if (i == 0 || i == height - 1)
-                std::cout << "═";
+                cout << "═";
             else if (j == 0 || j == width - 1)
-                std::cout << "║";
+                cout << "║";
             else
-                std::cout << " ";
+                cout << " ";
         }
     }
 
     if (align == Align::Center) {
         int text_start = x + (width - static_cast<int>(text.size())) / 2;
-        std::cout << "\x1B[" << y << ";" << text_start << "H";
+        cout << "\x1B[" << y << ";" << text_start << "H";
     } else if (align == Align::Right) {
         int text_start = x + width - static_cast<int>(text.size()) - 1;
-        std::cout << "\x1B[" << y << ";" << text_start << "H";
+        cout << "\x1B[" << y << ";" << text_start << "H";
     } else {
-        std::cout << "\x1B[" << y << ";" << (x + 1) << "H";
+        cout << "\x1B[" << y << ";" << (x + 1) << "H";
     }
-    
-    std::cout << text;
 
-    std::cout << "\x1B[1;1H"; // Move cursor to top-left
-    std::cout << "\x1B[0m"; // Reset color
-    std::cout.flush();
+    cout << text;
+
+    cout << "\x1B[1;1H"; // Move cursor to top-left
+    cout << "\x1B[0m"; // Reset color
+    cout.flush();
 }
 // Write text at (x, y) with specified color
-void screen::writeText(std::string text, int color, int x, int y) {
+void screen::writeText(string text, int color, int x, int y) {
     // Set color
-    std::cout << "\x1B[" << color << "m";
+    cout << "\x1B[" << color << "m";
 
     // Move cursor and write text
-    std::cout << "\x1B[" << y << ";" << x << "H" << text;
+    cout << "\x1B[" << y << ";" << x << "H" << text;
 
-    std::cout << "\x1B[1;1H"; // Move cursor to top-left
-    std::cout << "\x1B[0m"; // Reset color
-    std::cout.flush();
+    cout << "\x1B[1;1H"; // Move cursor to top-left
+    cout << "\x1B[0m"; // Reset color
+    cout.flush();
 }
 
 // Scroll through a cache of strings within a defined area
-int screen::scrollCache(const std::vector<std::string>& cache,
+int screen::scrollCache(const vector<string>& cache,
                         int width, int height,
                         int x, int y,
                         int FG_color, int HL_color) {
     if (cache.empty() || width <= 0 || height <= 0) return -1;
 
     // Hide cursor while menu is active
-    std::cout << "\x1B[?25l";
-    std::cout.flush();
+    cout << "\x1B[?25l";
+    cout.flush();
 
     size_t selected = 0; // absolute index in cache
     size_t start = 0;    // first visible line index
@@ -156,44 +160,44 @@ int screen::scrollCache(const std::vector<std::string>& cache,
     auto redraw = [&]() {
         // Clear area (also removes leftovers from previous longer lines)
         for (int row = 0; row < height; ++row) {
-            std::cout << "\x1B[" << (y + row) << ";" << x << "H";
-            std::cout << "\x1B[0m"; // reset
-            for (int col = 0; col < width; ++col) std::cout << ' ';
+            cout << "\x1B[" << (y + row) << ";" << x << "H";
+            cout << "\x1B[0m"; // reset
+            for (int col = 0; col < width; ++col) cout << ' ';
         }
 
         // Draw visible lines
-        size_t end = std::min(start + static_cast<size_t>(height), cache.size());
+        size_t end = min(start + static_cast<size_t>(height), cache.size());
 
         for (size_t idx = start; idx < end; ++idx) {
             int row = static_cast<int>(idx - start);
 
             // Move cursor to row
-            std::cout << "\x1B[" << (y + row) << ";" << x << "H";
+            cout << "\x1B[" << (y + row) << ";" << x << "H";
 
             // Set highlight or normal colors
             if (idx == selected) {
-                std::cout << "\x1B[" << HL_color << "m";
+                cout << "\x1B[" << HL_color << "m";
             } else {
-                std::cout << "\x1B[" << FG_color << "m";
+                cout << "\x1B[" << FG_color << "m";
             }
 
             // Print line padded/truncated to width
-            std::string line = cache[idx];
+            string line = cache[idx];
             if ((int)line.size() > width) line.resize(width);
-            std::cout << line;
+            cout << line;
 
             // Pad remaining space so highlight covers full width
             for (int pad = static_cast<int>(line.size()); pad < width; ++pad) {
-                std::cout << ' ';
+                cout << ' ';
             }
 
             // Reset after each line
-            std::cout << "\x1B[0m";
+            cout << "\x1B[0m";
         }
 
         // Put cursor somewhere non-annoying
-        std::cout << "\x1B[1;1H";
-        std::cout.flush();
+        cout << "\x1B[1;1H";
+        cout.flush();
     };
 
     redraw();
@@ -202,17 +206,24 @@ int screen::scrollCache(const std::vector<std::string>& cache,
         Key k = getKeyPress();
 
         if (k == Key::Quit) {
-            std::cout << "\x1B[?25h"; // show cursor
-            std::cout << "\x1B[0m";
-            std::cout.flush();
+            cout << "\x1B[?25h"; // show cursor
+            cout << "\x1B[0m";
+            cout.flush();
             return -1;
         }
 
         if (k == Key::Enter) {
-            std::cout << "\x1B[?25h"; // show cursor
-            std::cout << "\x1B[0m";
-            std::cout.flush();
+            cout << "\x1B[?25h"; // show cursor
+            cout << "\x1B[0m";
+            cout.flush();
             return static_cast<int>(selected);
+        }
+
+        if (k == Key::Back) {
+            cout << "\x1B[?25h"; // show cursor
+            cout << "\x1B[0m";
+            cout.flush();
+            return -2;
         }
 
         if (k == Key::Up) {
@@ -235,7 +246,7 @@ int screen::scrollCache(const std::vector<std::string>& cache,
 
 void screen::clearScreen() {
     // CSI[2J clears the screen, CSI[H moves the cursor to the top-left corner
-    std::cout << "\x1B[2J\x1B[H"; 
+    cout << "\x1B[2J\x1B[H"; 
     // Flush the output buffer to ensure the command is sent immediately
-    std::cout.flush();
+    cout.flush();
 }
